@@ -1,12 +1,12 @@
 #include "h265StreamParser.h"
 
-int FindStartCode3Bytes(unsigned char* scData);
-int FindStartCode4Bytes(unsigned char* scData);
-unsigned char GetNaluType(unsigned char* pInBuffer, int s32NaluStartPos);
-unsigned char IsSliceNalu(unsigned char u8Nal_unit_type);
-int GetNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bits);
-int GetSliceNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bits);
-void ParseNaluData(const unsigned int naluLen, unsigned char* const naluData);
+static int FindStartCode3Bytes(unsigned char* scData);
+static int FindStartCode4Bytes(unsigned char* scData);
+static unsigned char GetNaluType(unsigned char* pInBuffer, int s32NaluStartPos);
+static unsigned char IsSliceNalu(unsigned char u8Nal_unit_type);
+static int GetNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bits);
+static int GetSliceNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bits);
+static void ParseNaluData(const unsigned int naluLen, unsigned char* const naluData);
 
 #define streamSpace 1024*1024*30
 unsigned char pStream[streamSpace];
@@ -66,7 +66,7 @@ int nextNalLength(int Pos)
 			{
 				naluLen = GetSliceNaluDataLen(h265BitsPos+startCodeLen, nStreamLen, pStream) + startCodeLen;
 				sliceLen += naluLen;
-				ParseNaluData(sliceLen, pStream + h265BitsPos + 4);
+				//ParseNaluData(sliceLen, pStream + h265BitsPos + 4);
 				break;
 			}
 			else
@@ -111,17 +111,17 @@ static int FindStartCode4Bytes(unsigned char* scData)
 	return isFind;
 }
 
-unsigned char GetNaluType(unsigned char* pInBuffer, int s32NaluStartPos)
+static unsigned char GetNaluType(unsigned char* pInBuffer, int s32NaluStartPos)
 {
 	return (pInBuffer[s32NaluStartPos] >> 1) & 0x3f;
 }
 
-unsigned char IsSliceNalu(unsigned char u8Nal_unit_type)
+static unsigned char IsSliceNalu(unsigned char u8Nal_unit_type)
 {
 	return ((u8Nal_unit_type <= 9) || ((u8Nal_unit_type >= 16) && (u8Nal_unit_type <= 21)));
 }
 
-int GetNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bits)
+static int GetNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bits)
 {
 	int parsePos = startPos;
 
@@ -135,7 +135,7 @@ int GetNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bits)
 	return parsePos - startPos;
 }
 
-int GetSliceNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bits)
+static int GetSliceNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bits)
 {
 	int parsePos = startPos;
 

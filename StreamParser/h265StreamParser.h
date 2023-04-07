@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define PRINTF_DEBUG
+
 
 int initStream(const char* pStreamFile);
 int nextNalLength(int Pos);
