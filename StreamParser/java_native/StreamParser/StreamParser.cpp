@@ -1,8 +1,8 @@
 #include "StreamParser.h"
-#include "../h265StreamParser.h"
+#include "../../h265StreamParser.h"
 
 
-JNIEXPORT jint JNICALL Java_com_example_testc_StreamParser_initStream
+JNIEXPORT jint JNICALL Java_com_example_hevcdeocderlibrary_StreamParser_initStream
   (JNIEnv *env, jclass obj, jstring fileDir)
   {
 	  const char* folder = env->GetStringUTFChars(fileDir, NULL);
@@ -18,10 +18,10 @@ JNIEXPORT jint JNICALL Java_com_example_testc_StreamParser_initStream
 	  return streamLen;
   }
   
-JNIEXPORT jint JNICALL Java_com_example_testc_StreamParser_nextNalLen
+JNIEXPORT jint JNICALL Java_com_example_hevcdeocderlibrary_StreamParser_nextNalLen
   (JNIEnv *env, jclass obj, jint Pos)
   {
-	  jint sliceLen = nextNalPos(Pos);
+	  jint sliceLen = nextNalLength(Pos);
 	  return sliceLen;
   }
   
@@ -29,13 +29,11 @@ JNIEXPORT void JNICALL Java_com_example_hevcdeocderlibrary_StreamParser_readOneN
   (JNIEnv *env, jclass obj, jobject jbuffer, jint Pos, jint sliceLen)
   {
 	  void *address = env->GetDirectBufferAddress(jbuffer);
-	  readOneNal(&pTmpPic[0], Pos, onePicLen);
-	  env->ReleaseBooleanArrayElements(_pStream, pStream, 0);
-	  return sliceLen;
+	  readOneNal((unsigned char*)address, Pos, sliceLen);
   }
   
-  JNIEXPORT jint JNICALL Java_com_example_testc_StreamParser_add
-  (JNIEnv *env, jobject obj, jint a, jint b)
+  JNIEXPORT jint JNICALL Java_com_example_hevcdeocderlibrary_StreamParser_add
+  (JNIEnv *env, jclass obj, jint a, jint b)
   {
 	  return a + b;
   }

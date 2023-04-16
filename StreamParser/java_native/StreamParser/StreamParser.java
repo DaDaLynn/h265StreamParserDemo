@@ -2,7 +2,7 @@
 public class StreamParser
 {
     public static native int initStream(String pStreamFile);
-    public static native int nextNalLen(int nStreamLen, int Pos);
+    public static native int nextNalLen(int Pos);
     public static native void readOneNal(Object data, int Pos, int sliceLen);
 
     public static native int add(int a,int b);

@@ -21,7 +21,7 @@ JNIEXPORT jint JNICALL Java_com_example_hevcdeocderlibrary_StreamParser_initStre
  * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_com_example_hevcdeocderlibrary_StreamParser_nextNalLen
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     StreamParser
