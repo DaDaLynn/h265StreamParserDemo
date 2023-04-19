@@ -8,7 +8,7 @@ static int GetNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bit
 static int GetSliceNaluDataLen(int startPos, int h265BitsSize, unsigned char* h265Bits);
 static void ParseNaluData(const unsigned int naluLen, unsigned char* const naluData);
 
-#define streamSpace 1024*1024*30
+#define streamSpace 1024*1024*300
 unsigned char pStream[streamSpace];
 int nStreamLen = 0;
 

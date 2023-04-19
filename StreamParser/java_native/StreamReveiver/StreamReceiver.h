@@ -30,6 +30,14 @@ JNIEXPORT jint JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_NextOn
  */
 JNIEXPORT void JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_readOnePic
   (JNIEnv *, jclass, jobject);
+  
+/*
+ * Class:     StreamReceiver
+ * Method:    deinit
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT void JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_deinit
+  (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }

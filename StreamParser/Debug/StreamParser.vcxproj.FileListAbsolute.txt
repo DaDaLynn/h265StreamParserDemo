@@ -1,0 +1,2 @@
+D:\Learning\coding\vs2019\H265StreamParser\StreamParser\Debug\StreamParser.exe
+D:\Learning\coding\vs2019\H265StreamParser\StreamParser\Debug\StreamParser.pdb

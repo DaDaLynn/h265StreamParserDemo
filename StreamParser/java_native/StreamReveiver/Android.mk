@@ -1,5 +1,14 @@
 LOCAL_PATH := $(call my-dir)
 
+## include $(CLEAR_VARS)
+## LOCAL_MODULE := zoo-prebuilt
+## ifneq ($(filter $(NDK_KNOWN_DEVICE_ABI64S), $(TARGET_ARCH_ABI)),)
+## LOCAL_SRC_FILES := ../../build_android/libs/arm64-v8a/libH265StreamParser.so
+## else
+## LOCAL_SRC_FILES := ../../build_android/libs/armeabi-v7a/libH265StreamParser.so
+## endif
+## include $(PREBUILT_SHARED_LIBRARY)
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := foo-prebuilt
@@ -9,6 +18,7 @@ else
 LOCAL_SRC_FILES := ./h265_transport/Release/libs/armeabi-v7a/libtransport.so
 endif
 include $(PREBUILT_SHARED_LIBRARY)
+
 
 include $(CLEAR_VARS)
 
@@ -43,5 +53,5 @@ LOCAL_C_INCLUDES := .
 
 LOCAL_SRC_FILES := StreamReceiver.cpp
 LOCAL_SHARED_LIBRARIES := foo-prebuilt
-
+## LOCAL_SHARED_LIBRARIES += zoo-prebuilt
 include $(BUILD_SHARED_LIBRARY)
