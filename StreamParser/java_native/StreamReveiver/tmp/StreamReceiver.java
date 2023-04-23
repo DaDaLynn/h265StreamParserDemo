@@ -5,8 +5,13 @@ public class StreamReceiver
     public static native int NextOnePicLen();
     public static native void readOnePic(Object data);
     public static native int deinit();
-    public static native boolean write_data(String data_name, Object pData, int data_len);
-    public static native boolean read_data(String data_name, Object pData, int data_len);
+    public static native boolean write_int(String data_name, int pData);
+    public static native int read_int(String data_name);
+    public static native boolean write_float(String data_name, float pData);
+    public static native float read_float(String data_name);
+	
+	public static native boolean videostart();
+	public static native boolean videostop();
 
     static
     {
