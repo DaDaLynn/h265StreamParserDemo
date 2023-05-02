@@ -78,6 +78,14 @@ struct rv_param{
     float near_field_speed_limit{0}; //近场限速
     float far_field_bound{0}; //远场边界
     float far_field_speed_limit{0}; //远场限速
+	
+	rv_param(float _w = 0, float _nb = 0, float _nl = 0, float _fb = 0, float _fl = 0) {
+        lane_width = _w;
+        near_field_bound = _nb;
+        near_field_speed_limit = _nl;
+        far_field_bound = _fb;
+        far_field_speed_limit = _fl;
+    }
 };
 
 atomic<int> frm(0);
@@ -340,6 +348,96 @@ JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_re
 		// 设置成员变量的值
 		env->SetIntField(obj_rvp, fid_ah_no, val.ah_no);
 		env->SetIntField(obj_rvp, fid_ah_v, val.ah_v);
+	}
+	else
+		return false;
+}
+
+
+JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_write_1RvParam(JNIEnv *env, jobject obj, jobject param)
+{
+	if(client)
+	{
+		// 获取类
+		jclass cls_StreamReceiver = env->FindClass("com/example/hevcdeocderlibrary/StreamReceiver");	
+		if(cls_StreamReceiver == NULL)
+			LOGD("cls_StreamReceiver is NULL");
+		jclass cls_RvParam = env->FindClass("com/example/hevcdeocderlibrary/StreamReceiver$RvParam");
+		if(cls_RvParam == NULL)
+		{
+			LOGD("cls_RvParam is NULL");
+			return false;
+		}
+		// 获取成员变量的ID
+		jfieldID fid_lane_width = env->GetFieldID(cls_RvParam, "lane_width", "F");
+		jfieldID fid_near_field_bound = env->GetFieldID(cls_RvParam, "near_field_bound", "F");
+		jfieldID fid_near_field_speed_limit = env->GetFieldID(cls_RvParam, "near_field_speed_limit", "F");
+		jfieldID fid_far_field_bound = env->GetFieldID(cls_RvParam, "far_field_bound", "F");
+		jfieldID fid_far_field_speed_limit = env->GetFieldID(cls_RvParam, "far_field_speed_limit", "F");
+
+		// 获取Java对象
+		jobject obj_rvp = param;
+
+		// 获取成员变量的值
+		float lane_width = env->GetIntField(obj_rvp, fid_lane_width);
+		LOGD("lane_width: %f", lane_width);
+		float near_field_bound = env->GetIntField(obj_rvp, fid_near_field_bound);
+		LOGD("near_field_bound: %f", near_field_bound);
+		float near_field_speed_limit = env->GetIntField(obj_rvp, fid_near_field_speed_limit);
+		LOGD("near_field_speed_limit: %f", near_field_speed_limit);
+		float far_field_bound = env->GetIntField(obj_rvp, fid_far_field_bound);
+		LOGD("far_field_bound: %f", far_field_bound);
+		float far_field_speed_limit = env->GetIntField(obj_rvp, fid_far_field_speed_limit);
+		LOGD("far_field_speed_limit: %f", far_field_speed_limit);
+		
+		rv_param val(lane_width, near_field_bound, near_field_speed_limit, far_field_bound, far_field_speed_limit);		
+		return client->write_data("rv_param", &val, sizeof(val));
+	}
+	else
+		return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_read_1RvParam(JNIEnv *env, jobject obj, jobject param)
+{
+	if(client)
+	{
+		// 获取类
+		jclass cls_StreamReceiver = env->FindClass("com/example/hevcdeocderlibrary/StreamReceiver");	
+		if(cls_StreamReceiver == NULL)
+			LOGD("cls_StreamReceiver is NULL");
+		jclass cls_RvParam = env->FindClass("com/example/hevcdeocderlibrary/StreamReceiver$RvParam");
+		if(cls_RvParam == NULL)
+		{
+			LOGD("cls_RvParam is NULL");
+			return false;
+		}
+		// 获取成员变量的ID
+		jfieldID fid_lane_width = env->GetFieldID(cls_RvParam, "lane_width", "F");
+		jfieldID fid_near_field_bound = env->GetFieldID(cls_RvParam, "near_field_bound", "F");
+		jfieldID fid_near_field_speed_limit = env->GetFieldID(cls_RvParam, "near_field_speed_limit", "F");
+		jfieldID fid_far_field_bound = env->GetFieldID(cls_RvParam, "far_field_bound", "F");
+		jfieldID fid_far_field_speed_limit = env->GetFieldID(cls_RvParam, "far_field_speed_limit", "F");
+
+		// 获取Java对象
+		jobject obj_rvp = param;
+
+		rv_param val(-1, -2, -3, -4, -5);	
+		bool ret = client->read_data("rv_param", &val, sizeof(val));
+		if(ret)
+		{
+			LOGD("read_data success");
+		}
+		else
+			LOGD("read_data fail");
+		
+		
+
+		// 设置成员变量的值
+		env->SetIntField(obj_rvp, fid_lane_width, val.lane_width);
+		env->SetIntField(obj_rvp, fid_near_field_bound, val.near_field_bound);
+		env->SetIntField(obj_rvp, fid_near_field_speed_limit, val.near_field_speed_limit);
+		env->SetIntField(obj_rvp, fid_far_field_bound, val.far_field_bound);
+		env->SetIntField(obj_rvp, fid_far_field_speed_limit, val.far_field_speed_limit);
 	}
 	else
 		return false;

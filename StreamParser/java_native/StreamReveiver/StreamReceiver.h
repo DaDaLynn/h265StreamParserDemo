@@ -79,6 +79,23 @@ JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_wr
 JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_read_1AlarmHorn
   (JNIEnv *env, jobject, jobject);
   
+  
+/*
+ * Class:     StreamReceiver
+ * Method:    write_RvParam
+ * Signature: (Ljava/lang/String;)I
+ */  
+JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_write_1RvParam
+  (JNIEnv *env, jobject, jobject);
+  
+/*
+ * Class:     StreamReceiver
+ * Method:    read_RvParam
+ * Signature: (Ljava/lang/String;)I
+ */  
+JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_read_1RvParam
+  (JNIEnv *env, jobject, jobject);
+  
 /*
  * Class:     StreamReceiver
  * Method:    write_int
