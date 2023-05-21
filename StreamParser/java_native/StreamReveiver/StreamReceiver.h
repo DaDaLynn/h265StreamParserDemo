@@ -98,6 +98,15 @@ JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_re
   
 /*
  * Class:     StreamReceiver
+ * Method:    read_RadarData
+ * Signature: (Ljava/lang/String;)I
+ */  
+JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_read_1RadarData
+  (JNIEnv *env, jobject, jobject);  
+
+  
+/*
+ * Class:     StreamReceiver
  * Method:    write_int
  * Signature: (Ljava/lang/String;)I
  */

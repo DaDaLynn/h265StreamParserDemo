@@ -14,6 +14,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import io.dcloud.feature.uniapp.UniSDKInstance;
 import io.dcloud.feature.uniapp.annotation.UniJSMethod;
+import io.dcloud.feature.uniapp.bridge.UniJSCallback;
 import io.dcloud.feature.uniapp.ui.action.AbsComponentData;
 import io.dcloud.feature.uniapp.ui.component.AbsVContainer;
 import io.dcloud.feature.uniapp.ui.component.UniComponent;
@@ -32,6 +35,10 @@ public class HevcDecoderComponent extends UniComponent<SurfaceView> implements S
     //private static final String SAMPLE = "/data/local/tmp/1920x1080_yuv420p_test0.265";
     private static final String SAMPLE = "/data/local/tmp/rec_100frm.265";
     private static final String PNG_SAMPLE = "/data/local/tmp/show.png";
+    private int int_val = 0;
+    private float float_val = 1.0f;
+
+    //private StreamReceiver.AlarmHorn alarmHorn;
     private PlayerThread mPlayer;
     private SurfaceView surfaceView;
 
@@ -67,6 +74,17 @@ public class HevcDecoderComponent extends UniComponent<SurfaceView> implements S
 
     @UniJSMethod
     public void videoPlay() {
+        /*StreamReceiver.AlarmHorn alarmHorn = new StreamReceiver.AlarmHorn();
+        int_val++;
+        alarmHorn.ah_no = int_val;
+        int_val++;
+        alarmHorn.ah_v = int_val;
+        boolean write_ret = StreamReceiver.write_AlarmHorn(alarmHorn);
+        Log.d("DecodeActivity", "StreamReceiver.write_AlarmHorn return: " + write_ret);*/
+
+        boolean start_rec = StreamReceiver.videostart();
+        Log.d("DecodeActivity", "StreamReceiver.videostart return: " + start_rec);
+
         //showOneFrame(null);
         if (mPlayer != null) {
             if (Thread.State.RUNNABLE.equals(mPlayer.getState())) {
@@ -83,14 +101,61 @@ public class HevcDecoderComponent extends UniComponent<SurfaceView> implements S
 
     @UniJSMethod
     public void videoStop() {
+        /*StreamReceiver.AlarmHorn alarmHorn = new StreamReceiver.AlarmHorn();
+        StreamReceiver.read_AlarmHorn(alarmHorn);
+        Log.d("DecodeActivity", "StreamReceiver.set_AlarmHorn return: " + alarmHorn.ah_no + " "+ alarmHorn.ah_v);*/
+
         if (mPlayer != null) {
             mPlayer.signal();
         }
     }
 
+    @UniJSMethod
+    public void RvParamWrite(JSONObject json) {
+        float l = json.getFloatValue("lane_width");
+        float nb = json.getFloatValue("near_field_bound");
+        float nl = json.getFloatValue("near_field_speed_limit");
+        float fb = json.getFloatValue("far_field_bound");
+        float fl = json.getFloatValue("far_field_speed_limit");
+        StreamReceiver.RvParam rvParam = new StreamReceiver.RvParam(l, nb, nl, fb, fl);
+        boolean write_ret = StreamReceiver.write_RvParam(rvParam);
+        Log.d("DecodeActivity", "StreamReceiver.RvParamWrite return: " + write_ret);
+    }
+
+    @UniJSMethod
+    public void RvParamRead(UniJSCallback callback) {
+        StreamReceiver.RvParam rvParam = new StreamReceiver.RvParam();
+        boolean read_ret = StreamReceiver.read_RvParam(rvParam);
+        Log.d("DecodeActivity", "StreamReceiver.read_RvParam return: " + read_ret);
+
+        JSONObject res = new JSONObject();
+        res.put("lane_width", rvParam.lane_width);
+        res.put("near_field_bound", rvParam.near_field_bound);
+        res.put("near_field_speed_limit", rvParam.near_field_speed_limit);
+        res.put("far_field_bound", rvParam.far_field_bound);
+        res.put("far_field_speed_limit", rvParam.far_field_speed_limit);
+        callback.invoke(res);
+    }
+
+    @UniJSMethod
+    public void RadarDataRead(UniJSCallback callback) {
+        StreamReceiver.RadarData radarData = new StreamReceiver.RadarData();
+        boolean read_ret = StreamReceiver.read_RadarData(radarData);
+        Log.d("DecodeActivity", "StreamReceiver.read_RadarData return: " + read_ret);
+
+        JSONObject res = new JSONObject();
+        res.put("obj_id", radarData.obj_id);
+        res.put("dislong", radarData.dislong);
+        res.put("dislat", radarData.dislat);
+        res.put("vrelong", radarData.vrelong);
+        res.put("status", radarData.status);
+        callback.invoke(res);
+    }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-
+        int init_rec = StreamReceiver.init();
+        Log.d("DecodeActivity", "StreamReceiver.init return: " + init_rec);
     }
 
     @Override
@@ -103,6 +168,8 @@ public class HevcDecoderComponent extends UniComponent<SurfaceView> implements S
         if (mPlayer != null) {
             mPlayer.interrupt();
         }
+        int deinit_rec = StreamReceiver.deinit();
+        Log.d("DecodeActivity", "StreamReceiver.deinit return: " + deinit_rec);
     }
 
     @Override
@@ -169,8 +236,8 @@ public class HevcDecoderComponent extends UniComponent<SurfaceView> implements S
                 throw new RuntimeException(e);
             }*/
 
-            openDecoder("video/hevc", 1920, 1080);
             //openDecoder("video/hevc", 1920, 1080);
+            openDecoder("video/avc", 1920, 1080);
 
             ByteBuffer[] inputBuffers = decoder.getInputBuffers();
             ByteBuffer[] outputBuffers = decoder.getOutputBuffers();
@@ -179,7 +246,7 @@ public class HevcDecoderComponent extends UniComponent<SurfaceView> implements S
             long startMs = System.currentTimeMillis();
             long startNano = System.nanoTime();
 
-            int init_rec = StreamReceiver.init();
+            //int init_rec = StreamReceiver.init();
 
             //int streamLen = StreamParser.initStream(SAMPLE);
             //int Pos = 0;
@@ -307,10 +374,10 @@ public class HevcDecoderComponent extends UniComponent<SurfaceView> implements S
                 }
             }
             Log.d("DecodeActivity", "closeDecoder");
-
-            StreamReceiver.deinit();
-
             closeDecoder();
+
+            boolean stop_rec = StreamReceiver.videostop();
+            Log.d("DecodeActivity", "StreamReceiver.videostop return: " + stop_rec);
 
 
             // 释放资源

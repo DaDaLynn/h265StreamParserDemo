@@ -9,13 +9,23 @@ LOCAL_PATH := $(call my-dir)
 ## endif
 ## include $(PREBUILT_SHARED_LIBRARY)
 
+## include $(CLEAR_VARS)
+## 
+## LOCAL_MODULE := foo-prebuilt
+## ifneq ($(filter $(NDK_KNOWN_DEVICE_ABI64S), $(TARGET_ARCH_ABI)),)
+## LOCAL_SRC_FILES := ./h265_transport/Release/libs/arm64-v8a/libtransport.so
+## else
+## LOCAL_SRC_FILES := ./h265_transport/Release/libs/armeabi-v7a/libtransport.so
+## endif
+## include $(PREBUILT_SHARED_LIBRARY)
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := foo-prebuilt
 ifneq ($(filter $(NDK_KNOWN_DEVICE_ABI64S), $(TARGET_ARCH_ABI)),)
-LOCAL_SRC_FILES := ./h265_transport/Release/libs/arm64-v8a/libtransport.so
+LOCAL_SRC_FILES := datatrans/Release2023.5.21/libs/libtransport.so
 else
-LOCAL_SRC_FILES := ./h265_transport/Release/libs/armeabi-v7a/libtransport.so
+LOCAL_SRC_FILES := datatrans/Release2023.5.21/libs/libtransport.so
 endif
 include $(PREBUILT_SHARED_LIBRARY)
 

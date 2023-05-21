@@ -1,6 +1,7 @@
 #include "StreamReceiver.h"
-#include "h265_transport/Release/includes/client.hpp"
+//#include "h265_transport/Release/includes/client.hpp"
 //#include "../../h265StreamParser.h"
+#include "datatrans/Release2023.5.21/includes/client.hpp"
 
 #include <android/log.h>
 #include <atomic>
@@ -65,6 +66,36 @@ class BitsQueue{
 
 BitsQueue bitqueue;
 
+class LatestRadarData{
+	
+public:
+	void write(const RadarData & _in_data)
+	{
+		unique_lock<mutex> m(m_mtx);
+		data.obj_id  = _in_data.obj_id;
+		data.dislong = _in_data.dislong;
+		data.dislat  = _in_data.dislat;
+		data.vrelong = _in_data.vrelong;
+		data.status  = _in_data.status;
+	}
+	
+	void read(RadarData& _io_data)
+	{
+		unique_lock<mutex> m(m_mtx);
+		_io_data.obj_id  = data.obj_id;
+		_io_data.dislong = data.dislong;
+		_io_data.dislat  = data.dislat;
+		_io_data.vrelong = data.vrelong;
+		_io_data.status  = data.status;
+	}
+	
+private:
+	RadarData data{0};
+	mutex m_mtx;
+};
+
+LatestRadarData latestdata;
+
 struct alarm_horn{
     int ah_no{0}; //1~3报警喇叭继电器序号，4~5：LED1/手环触发LED2
     int ah_v{0};  //0:断开；1：闭合
@@ -91,7 +122,7 @@ struct rv_param{
 atomic<int> frm(0);
 atomic<int> video_receiving(0);
 atomic<int> idr_received(0);
-void DataProcCb(void* pData, int data_len, bool bIdr, void* pUserData){
+void VideoDataCb(void* pData, int data_len, bool bIdr, void* pUserData){
     //LOGD("send data len:%d", data_len);
 	/*if(pRecFile)
 	{
@@ -110,6 +141,21 @@ void DataProcCb(void* pData, int data_len, bool bIdr, void* pUserData){
 	}
 		
 	//bitqueue.push(pData, data_len);
+}
+
+int64_t get_ts_us() //us
+{
+    using namespace std::chrono;
+    return duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+}
+
+void RadarDataCb(void* pData, int data_len, void* pUserData){
+    static int64_t ts = get_ts_us();
+    auto interval = get_ts_us() - ts;
+    ts = get_ts_us();
+    auto radar_data = *(RadarData*)pData; //需要将radar_data送给界面展示
+    LOGD("RadarData[%d]==>data_len: %d, %.2fms\n", radar_data.obj_id, data_len, interval/1000.0f);
+	latestdata.write(radar_data);
 }
 
 /*class FakeClient
@@ -154,7 +200,7 @@ public:
 			if(onePicLen <= 0)
 				break;
 			
-            DataProcCb((void*)&pTmpPic[0], onePicLen, false, nullptr);
+            VideoDataCb((void*)&pTmpPic[0], onePicLen, false, nullptr);
 			Pos += onePicLen;
             this_thread::sleep_for(chrono::milliseconds(30));
         }
@@ -193,7 +239,7 @@ JNIEXPORT jint JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_init
 		if(client == nullptr)
 			return -1;
 		
-		if (!client->init(DataProcCb, nullptr)){
+		if (!client->init(VideoDataCb, nullptr, RadarDataCb, nullptr)){
 			LOGD("client init success...........\n");
 			return 0;
 		}else{
@@ -438,6 +484,44 @@ JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_re
 		env->SetIntField(obj_rvp, fid_near_field_speed_limit, val.near_field_speed_limit);
 		env->SetIntField(obj_rvp, fid_far_field_bound, val.far_field_bound);
 		env->SetIntField(obj_rvp, fid_far_field_speed_limit, val.far_field_speed_limit);
+	}
+	else
+		return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_read_1RadarData(JNIEnv *env, jobject obj, jobject param)
+{
+	if(client)
+	{
+		// 获取类
+		jclass cls_StreamReceiver = env->FindClass("com/example/hevcdeocderlibrary/StreamReceiver");	
+		if(cls_StreamReceiver == NULL)
+			LOGD("cls_StreamReceiver is NULL");
+		jclass cls_RadarData = env->FindClass("com/example/hevcdeocderlibrary/StreamReceiver$RadarData");
+		if(cls_RadarData == NULL)
+		{
+			LOGD("cls_RadarData is NULL");
+			return false;
+		}
+		// 获取成员变量的ID
+		jfieldID fid_obj_id = env->GetFieldID(cls_RadarData, "obj_id", "I");
+		jfieldID fid_dislong = env->GetFieldID(cls_RadarData, "dislong", "F");
+		jfieldID fid_dislat = env->GetFieldID(cls_RadarData, "dislat", "F");
+		jfieldID fid_vrelong = env->GetFieldID(cls_RadarData, "vrelong", "F");
+		jfieldID fid_status = env->GetFieldID(cls_RadarData, "status", "F");
+
+		// 获取Java对象
+		jobject obj_rdp = param;
+
+		RadarData val{0};	
+		latestdata.read(val);		
+
+		// 设置成员变量的值
+		env->SetIntField(obj_rdp, fid_obj_id, val.obj_id);
+		env->SetIntField(obj_rdp, fid_dislong, val.dislong);
+		env->SetIntField(obj_rdp, fid_dislat, val.dislat);
+		env->SetIntField(obj_rdp, fid_vrelong, val.vrelong);
+		env->SetIntField(obj_rdp, fid_status, val.status);
 	}
 	else
 		return false;

@@ -1,6 +1,6 @@
 ./local/armeabi-v7a/objs/StreamReceiverJni_Android/StreamReceiver.o: \
   StreamReceiver.cpp StreamReceiver.h \
-  h265_transport/Release/includes/client.hpp \
+  datatrans/Release2023.5.21/includes/client.hpp \
   D:/pkg/android-ndk-r25c-windows/android-ndk-r25c/build/../sources/cxx-stl/llvm-libc++/include/stdlib.h \
   D:/pkg/android-ndk-r25c-windows/android-ndk-r25c/build/../sources/cxx-stl/llvm-libc++/include/__config \
   D:/pkg/android-ndk-r25c-windows/android-ndk-r25c/build/../sources/cxx-stl/llvm-libc++/include/inttypes.h \
@@ -62,7 +62,7 @@
 
 StreamReceiver.h:
 
-h265_transport/Release/includes/client.hpp:
+datatrans/Release2023.5.21/includes/client.hpp:
 
 D:/pkg/android-ndk-r25c-windows/android-ndk-r25c/build/../sources/cxx-stl/llvm-libc++/include/stdlib.h:
 
