@@ -6,7 +6,7 @@
 #include <android/log.h>
 #include <atomic>
 
-#define TAG "njbas"
+#define TAG "njbas_0604"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
 
 #include <thread>
@@ -15,6 +15,25 @@
 #include <mutex>
 using namespace std;
 
+#include <string>
+#include <chrono>
+#include <sys/time.h>
+#include <ctime>
+string timeString()
+{
+	auto t = std::chrono::system_clock::now();
+    std::time_t time = std::chrono::system_clock::to_time_t(t);
+    std::string time_str = std::ctime(&time);
+    time_str.resize(time_str.size() - 1);
+    return time_str;
+}
+
+long long milliseconds(){
+    auto now = std::chrono::system_clock::now();
+    auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
+    long long value = now_ms.time_since_epoch().count();
+    return value;
+}
 
 //FILE * pRecFile = NULL;
 
@@ -122,8 +141,14 @@ struct rv_param{
 atomic<int> frm(0);
 atomic<int> video_receiving(0);
 atomic<int> idr_received(0);
+
+long long pts = 0;
 void VideoDataCb(void* pData, int data_len, bool bIdr, void* pUserData){
-    //LOGD("send data len:%d", data_len);
+    //LOGD("%s.%lld empty callbk, send data len:%d", timeString().c_str(), milliseconds(), data_len);
+	long long time_dif = milliseconds() - pts;
+	//LOGD("%lldms empty callbk, send data len:%d", time_dif, data_len);
+	pts = milliseconds();
+	//return;
 	/*if(pRecFile)
 	{
 		LOGD("write len:%d", fwrite(pData, 1, data_len, pRecFile));
@@ -135,7 +160,7 @@ void VideoDataCb(void* pData, int data_len, bool bIdr, void* pUserData){
 			idr_received = 1;
 		
 		if(idr_received){
-			//LOGD("receive frm: %d len:%d", ++frm, data_len);
+			LOGD("receive frm: %d len:%d", ++frm, data_len);
 			bitqueue.push(pData, data_len);
 		}
 	}
@@ -282,6 +307,7 @@ JNIEXPORT void JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_videos
 JNIEXPORT int JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_NextOnePicLen
   (JNIEnv *env, jclass obj)
   {  
+	  LOGD("NextOnePicLen...........\n");
 	  return bitqueue.frontBitLen();
   }
   
@@ -423,20 +449,22 @@ JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_wr
 
 		// 获取Java对象
 		jobject obj_rvp = param;
-
+		
+		
+		LOGD("for test: %f", 1.23);
 		// 获取成员变量的值
-		float lane_width = env->GetIntField(obj_rvp, fid_lane_width);
+		float lane_width = env->GetFloatField(obj_rvp, fid_lane_width);
 		LOGD("lane_width: %f", lane_width);
-		float near_field_bound = env->GetIntField(obj_rvp, fid_near_field_bound);
+		float near_field_bound = env->GetFloatField(obj_rvp, fid_near_field_bound);
 		LOGD("near_field_bound: %f", near_field_bound);
-		float near_field_speed_limit = env->GetIntField(obj_rvp, fid_near_field_speed_limit);
+		float near_field_speed_limit = env->GetFloatField(obj_rvp, fid_near_field_speed_limit);
 		LOGD("near_field_speed_limit: %f", near_field_speed_limit);
-		float far_field_bound = env->GetIntField(obj_rvp, fid_far_field_bound);
+		float far_field_bound = env->GetFloatField(obj_rvp, fid_far_field_bound);
 		LOGD("far_field_bound: %f", far_field_bound);
-		float far_field_speed_limit = env->GetIntField(obj_rvp, fid_far_field_speed_limit);
+		float far_field_speed_limit = env->GetFloatField(obj_rvp, fid_far_field_speed_limit);
 		LOGD("far_field_speed_limit: %f", far_field_speed_limit);
 		
-		rv_param val(lane_width, near_field_bound, near_field_speed_limit, far_field_bound, far_field_speed_limit);		
+		rv_param val(lane_width, near_field_bound, near_field_speed_limit, far_field_bound, far_field_speed_limit);	
 		return client->write_data("rv_param", &val, sizeof(val));
 	}
 	else
@@ -473,10 +501,10 @@ JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_re
 		{
 			LOGD("read_data success");
 		}
-		else
+		else{
 			LOGD("read_data fail");
-		
-		
+			return false;
+		}				
 
 		// 设置成员变量的值
 		env->SetIntField(obj_rvp, fid_lane_width, val.lane_width);
@@ -484,6 +512,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_re
 		env->SetIntField(obj_rvp, fid_near_field_speed_limit, val.near_field_speed_limit);
 		env->SetIntField(obj_rvp, fid_far_field_bound, val.far_field_bound);
 		env->SetIntField(obj_rvp, fid_far_field_speed_limit, val.far_field_speed_limit);
+		return true;
 	}
 	else
 		return false;
