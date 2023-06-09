@@ -248,6 +248,7 @@ Client* client = nullptr;
 JNIEXPORT jint JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_init
   (JNIEnv *env, jclass obj)
   {
+	
 	/*pRecFile = fopen("/data/data/com.android.UniPlugin/readOnePic_0416.265", "rb");
 	if(pRecFile == NULL){
 		LOGD("receive file open fail...........\n");
@@ -424,7 +425,6 @@ JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_re
 	else
 		return false;
 }
-
 
 JNIEXPORT jboolean JNICALL Java_com_example_hevcdeocderlibrary_StreamReceiver_write_1RvParam(JNIEnv *env, jobject obj, jobject param)
 {
