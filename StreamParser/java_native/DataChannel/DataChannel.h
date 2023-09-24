@@ -7,13 +7,22 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+  
 /*
  * Class:     DataChannel
  * Method:    init
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_com_example_clientlibrary_DataChannel_init
+JNIEXPORT jlong JNICALL Java_com_example_clientlibrary_DataChannel_init
   (JNIEnv *, jclass);
+  
+/*
+ * Class:     DataChannel
+ * Method:    status
+ * Signature: ()I
+ */
+JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_status
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     DataChannel
@@ -21,63 +30,15 @@ JNIEXPORT jint JNICALL Java_com_example_clientlibrary_DataChannel_init
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_com_example_clientlibrary_DataChannel_deinit
-  (JNIEnv *, jclass);
-
-/*
- * Class:     DataChannel
- * Method:    write_int
- * Signature: (Ljava/lang/String;I)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_write_1int
-  (JNIEnv *, jclass, jstring, jint);
-
-/*
- * Class:     DataChannel
- * Method:    read_int
- * Signature: (Ljava/lang/String;)I
- */
-JNIEXPORT jint JNICALL Java_com_example_clientlibrary_DataChannel_read_1int
-  (JNIEnv *, jclass, jstring);
-
-/*
- * Class:     DataChannel
- * Method:    write_float
- * Signature: (Ljava/lang/String;F)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_write_1float
-  (JNIEnv *, jclass, jstring, jfloat);
-
-/*
- * Class:     DataChannel
- * Method:    read_float
- * Signature: (Ljava/lang/String;)F
- */
-JNIEXPORT jfloat JNICALL Java_com_example_clientlibrary_DataChannel_read_1float
-  (JNIEnv *, jclass, jstring);
-
-/*
- * Class:     DataChannel
- * Method:    write_AlarmHorn
- * Signature: (LDataChannel/AlarmHorn;)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_write_1AlarmHorn
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     DataChannel
- * Method:    read_AlarmHorn
- * Signature: (LDataChannel/AlarmHorn;)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_read_1AlarmHorn
-  (JNIEnv *, jclass, jobject);
-
+  (JNIEnv *, jclass, jlong);  
+  
 /*
  * Class:     DataChannel
  * Method:    write_RvParam
  * Signature: (LDataChannel/RvParam;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_write_1RvParam
-  (JNIEnv *, jclass, jobject);
+  (JNIEnv *, jclass, jlong, jobject);
 
 /*
  * Class:     DataChannel
@@ -85,15 +46,90 @@ JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_write_1RvP
  * Signature: (LDataChannel/RvParam;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_read_1RvParam
-  (JNIEnv *, jclass, jobject);
-
+  (JNIEnv *, jclass, jlong, jobject);
+  
 /*
  * Class:     DataChannel
  * Method:    read_RadarData
  * Signature: (LDataChannel/RadarData;)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_1RadarData
-  (JNIEnv *, jclass, jobject);
+JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_read_1RadarData
+  (JNIEnv *, jclass, jlong, jobject);
+  
+JNIEXPORT jobjectArray JNICALL Java_com_example_clientlibrary_DataChannel_read_1RadarDataArray
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     DataChannel
+ * Method:    write_int
+ * Signature: (Ljava/lang/String;I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_write_1int
+  (JNIEnv *, jclass, jlong, jstring, jint);
+
+/*
+ * Class:     DataChannel
+ * Method:    read_int
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_com_example_clientlibrary_DataChannel_read_1int
+  (JNIEnv *, jclass, jlong, jstring);
+  
+/*
+ * Class:     DataChannel
+ * Method:    write_name
+ * Signature: (Ljava/lang/String;I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_write_1name
+  (JNIEnv *, jclass, jlong, jstring);
+
+/*
+ * Class:     DataChannel
+ * Method:    read_name
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jstring JNICALL Java_com_example_clientlibrary_DataChannel_read_1name
+  (JNIEnv *, jclass, jlong);
+  
+/*
+ * Class:     DataChannel
+ * Method:    read_info
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jstring JNICALL Java_com_example_clientlibrary_DataChannel_read_1info
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     DataChannel
+ * Method:    write_float
+ * Signature: (Ljava/lang/String;F)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_write_1float
+  (JNIEnv *, jclass, jlong, jstring, jfloat);
+
+/*
+ * Class:     DataChannel
+ * Method:    read_float
+ * Signature: (Ljava/lang/String;)F
+ */
+JNIEXPORT jfloat JNICALL Java_com_example_clientlibrary_DataChannel_read_1float
+  (JNIEnv *, jclass, jlong, jstring);
+
+/*
+ * Class:     DataChannel
+ * Method:    write_AlarmHorn
+ * Signature: (LDataChannel/AlarmHorn;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_write_1AlarmHorn
+  (JNIEnv *, jclass, jlong, jobject);
+
+/*
+ * Class:     DataChannel
+ * Method:    read_AlarmHorn
+ * Signature: (LDataChannel/AlarmHorn;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_example_clientlibrary_DataChannel_read_1AlarmHorn
+  (JNIEnv *, jclass, jlong, jobject);
 
 #ifdef __cplusplus
 }
